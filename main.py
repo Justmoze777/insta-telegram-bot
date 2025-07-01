@@ -3,7 +3,7 @@ from instagrapi import Client
 
 # Setup
 USERNAME = "mynameispravinbhai"
-PASSWORD = "Mynameispravin@122"
+PASSWORD = "Pass@121212"
 TELEGRAM_TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
 
 cl = Client()
