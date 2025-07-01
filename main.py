@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
 
 def start(update, context):
-    update.message.reply_text("👋 Send any Instagram Reel link to download in Full HD.")
+    update.message.reply_text("👋 Send me any Instagram Reel link to download in Full HD.")
 
 def download_reel(update, context):
     url = update.message.text.strip()
@@ -17,21 +17,24 @@ def download_reel(update, context):
     update.message.reply_text("📥 Downloading... Please wait.")
 
     try:
+        session = requests.Session()
         headers = {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "User-Agent": "Mozilla/5.0"
+            'User-Agent': 'Mozilla/5.0'
         }
-        data = {"url": url}
-        res = requests.post("https://snapsave.app/action.php", data=data, headers=headers)
+        data = {
+            'id': url,
+            'locale': 'en'
+        }
 
+        res = session.post("https://ssstik.io/abc", headers=headers, data=data)
         soup = BeautifulSoup(res.text, "html.parser")
-        video_tag = soup.find("a", {"class": "download-button"})
-        
+
+        video_tag = soup.find("a")
         if video_tag and video_tag.get("href"):
             video_url = video_tag["href"]
             update.message.reply_video(video_url, caption="✅ Full HD Reel")
         else:
-            update.message.reply_text("⚠️ Could not find video. Link might be private or unsupported.")
+            update.message.reply_text("⚠️ Video not found. Try another link or make sure it's public.")
 
     except Exception as e:
         update.message.reply_text(f"❌ Error: {str(e)}")
