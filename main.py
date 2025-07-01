@@ -1,45 +1,34 @@
-import requests
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from bs4 import BeautifulSoup
+from instagrapi import Client
 
-TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
+# Setup
+USERNAME = "mynameispravin"
+PASSWORD = "Mynameispravin"
+TELEGRAM_TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
+
+cl = Client()
+cl.login(USERNAME, PASSWORD)
 
 def start(update, context):
-    update.message.reply_text("👋 Send me any Instagram Reel link to download in Full HD.")
+    update.message.reply_text("👋 Send a reel link to get HD download.")
 
 def download_reel(update, context):
     url = update.message.text.strip()
-    
+
     if "instagram.com/reel" not in url:
-        update.message.reply_text("❌ Please send a valid Instagram Reel URL.")
+        update.message.reply_text("❌ Invalid link.")
         return
 
-    update.message.reply_text("📥 Downloading... Please wait.")
-
     try:
-        session = requests.Session()
-        headers = {
-            'User-Agent': 'Mozilla/5.0'
-        }
-        data = {
-            'id': url,
-            'locale': 'en'
-        }
+        media_id = cl.media_pk_from_url(url)
+        media_info = cl.media_info(media_id)
+        video_url = media_info.video_url
 
-        res = session.post("https://ssstik.io/abc", headers=headers, data=data)
-        soup = BeautifulSoup(res.text, "html.parser")
-
-        video_tag = soup.find("a")
-        if video_tag and video_tag.get("href"):
-            video_url = video_tag["href"]
-            update.message.reply_video(video_url, caption="✅ Full HD Reel")
-        else:
-            update.message.reply_text("⚠️ Video not found. Try another link or make sure it's public.")
-
+        update.message.reply_video(video_url, caption="✅ HD Reel")
     except Exception as e:
         update.message.reply_text(f"❌ Error: {str(e)}")
 
-updater = Updater(TOKEN, use_context=True)
+updater = Updater(TELEGRAM_TOKEN, use_context=True)
 dp = updater.dispatcher
 dp.add_handler(CommandHandler("start", start))
 dp.add_handler(MessageHandler(Filters.text & ~Filters.command, download_reel))
