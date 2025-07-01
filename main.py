@@ -1,37 +1,37 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import requests
+import logging
 
+# Telegram Bot Token (use your real one here)
 TOKEN = '7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM'
 
+# Enable logging to Railway console
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def start(update, context):
-    update.message.reply_text("👋 Welcome! Send me an Instagram Reel link to download.")
+    logger.info("User started the bot.")
+    update.message.reply_text("👋 Welcome! Send me any Instagram reel link to download.")
 
 def handle_message(update, context):
-    url = update.message.text
-    if "instagram.com/reel" in url:
-        update.message.reply_text("📥 Downloading reel...")
+    text = update.message.text
+    chat_id = update.message.chat_id
+    logger.info(f"Received message: {text} from {chat_id}")
 
-        api_url = "https://igram.io/api/ajaxSearch"
-        headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-        data = f"q={url}"
-
-        response = requests.post(api_url, data=data, headers=headers)
-
-        if response.ok:
-            try:
-                json_data = response.json()
-                video_url = json_data['data']['medias'][0]['url']
-                update.message.reply_video(video_url)
-            except:
-                update.message.reply_text("⚠️ Couldn’t fetch video. Try another link.")
-        else:
-            update.message.reply_text("⚠️ Error reaching API. Try again later.")
+    if "instagram.com/reel" in text:
+        update.message.reply_text("📥 Downloading reel... (Feature coming soon)")
     else:
-        update.message.reply_text("❌ Please send a valid Instagram Reel link.")
+        update.message.reply_text("❌ Please send a valid Instagram reel link.")
 
-updater = Updater(TOKEN, use_context=True)
-dp = updater.dispatcher
-dp.add_handler(CommandHandler("start", start))
-dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
-updater.start_polling()
-updater.idle()
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+
+    logger.info("Bot started polling...")
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
