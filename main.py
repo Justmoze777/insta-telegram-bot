@@ -4,7 +4,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
 
 def start(update, context):
-    update.message.reply_text("👋 Send me any Instagram Reel link to download in HD.")
+    update.message.reply_text("👋 Send any Instagram Reel link to download in Full HD.")
 
 def download_reel(update, context):
     url = update.message.text.strip()
@@ -13,24 +13,21 @@ def download_reel(update, context):
         update.message.reply_text("❌ Please send a valid Instagram Reel URL.")
         return
 
-    update.message.reply_text("📥 Downloading Full HD reel...")
+    update.message.reply_text("📥 Downloading... Please wait.")
 
     try:
         headers = {
-            'User-Agent': 'Mozilla/5.0',
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "User-Agent": "Mozilla/5.0"
         }
-        response = requests.post(
-            "https://saveig.app/api/ajaxSearch",
-            headers=headers,
-            data={"q": url}
-        )
-        data = response.json()
+        data = f"url={url}"
+        res = requests.post("https://snapsave.app/action.php", data=data, headers=headers)
+        
+        # Extract video link from response HTML (ugly but works)
+        video_url = res.text.split('href="')[1].split('"')[0]
 
-        if "data" in data and data["data"]["medias"]:
-            video_url = data["data"]["medias"][0]["url"]
-            update.message.reply_video(video_url, caption="✅ Reel downloaded in HD.")
-        else:
-            update.message.reply_text("⚠️ Couldn't fetch video. Try a different link.")
+        update.message.reply_video(video_url, caption="✅ Reel in Full HD")
+
     except Exception as e:
         update.message.reply_text(f"❌ Error: {str(e)}")
 
