@@ -1,7 +1,6 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import requests
 
-# Tera Bot Token
 TOKEN = '7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM'
 
 def start(update, context):
@@ -12,7 +11,7 @@ def handle_message(update, context):
     if "instagram.com/reel" in url:
         update.message.reply_text("📥 Downloading reel...")
 
-        api_url = f"https://igram.io/api/ajaxSearch"
+        api_url = "https://igram.io/api/ajaxSearch"
         headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f"q={url}"
 
