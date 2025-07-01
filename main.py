@@ -2,7 +2,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from instagrapi import Client
 
 # Setup
-USERNAME = "mynameispravin"
+USERNAME = "mynameispravinbhai"
 PASSWORD = "Mynameispravin"
 TELEGRAM_TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
 
