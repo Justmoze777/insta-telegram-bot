@@ -1,5 +1,6 @@
 import requests
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from bs4 import BeautifulSoup
 
 TOKEN = "7594237181:AAHwlqXJo43nP8q5qNc_HK505j-uGLhkERM"
 
@@ -20,13 +21,17 @@ def download_reel(update, context):
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "User-Agent": "Mozilla/5.0"
         }
-        data = f"url={url}"
+        data = {"url": url}
         res = requests.post("https://snapsave.app/action.php", data=data, headers=headers)
-        
-        # Extract video link from response HTML (ugly but works)
-        video_url = res.text.split('href="')[1].split('"')[0]
 
-        update.message.reply_video(video_url, caption="✅ Reel in Full HD")
+        soup = BeautifulSoup(res.text, "html.parser")
+        video_tag = soup.find("a", {"class": "download-button"})
+        
+        if video_tag and video_tag.get("href"):
+            video_url = video_tag["href"]
+            update.message.reply_video(video_url, caption="✅ Full HD Reel")
+        else:
+            update.message.reply_text("⚠️ Could not find video. Link might be private or unsupported.")
 
     except Exception as e:
         update.message.reply_text(f"❌ Error: {str(e)}")
